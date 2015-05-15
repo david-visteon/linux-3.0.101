@@ -858,6 +858,8 @@ static int esdhc_pltfm_init(struct sdhci_host *host, struct sdhci_pltfm_data *pd
 	if (boarddata->keep_power_at_suspend)
 		host->mmc->pm_caps |= (MMC_PM_KEEP_POWER | \
 					MMC_PM_WAKE_SDIO_IRQ);
+	if (boarddata->power_off_card)
+		host->mmc->caps |= MMC_CAP_POWER_OFF_CARD;
 	if (boarddata->cd_type == ESDHC_CD_PERMANENT)
 		host->mmc->caps |= MMC_CAP_NONREMOVABLE;
 	else if (boarddata->cd_type == ESDHC_CD_CONTROLLER

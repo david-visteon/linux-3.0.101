@@ -2088,7 +2088,7 @@ int mmc_pm_notify(struct notifier_block *notify_block,
 static int __init mmc_init(void)
 {
 	int ret;
-
+      printk(KERN_WARNING "mmc_init\n");
 	workqueue = alloc_ordered_workqueue("kmmcd", 0);
 	if (!workqueue)
 		return -ENOMEM;

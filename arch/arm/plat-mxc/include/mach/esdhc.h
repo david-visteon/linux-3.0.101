@@ -35,6 +35,8 @@ struct esdhc_platform_data {
 	unsigned int support_8bit;
 	unsigned int keep_power_at_suspend;
 	unsigned int delay_line;
+	unsigned int power_off_card;
 	int (*platform_pad_change)(unsigned int index, int clock);
+ 	void (*set_power)(bool power_on);
 };
 #endif /* __ASM_ARCH_IMX_ESDHC_H */

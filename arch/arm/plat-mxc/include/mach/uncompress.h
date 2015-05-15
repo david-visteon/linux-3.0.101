@@ -123,7 +123,7 @@ static __inline__ void __arch_decomp_setup(unsigned long arch_id)
 		uart_base = MX53_UART1_BASE_ADDR;
 		break;
 	case MACH_TYPE_MX6Q_ARM2:
-		uart_base = MX6Q_UART4_BASE_ADDR;
+		uart_base = MX6Q_UART2_BASE_ADDR;
 		break;
 	case MACH_TYPE_MX6Q_SABRELITE:
 		uart_base = MX6Q_UART2_BASE_ADDR;

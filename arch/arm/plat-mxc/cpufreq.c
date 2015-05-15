@@ -109,7 +109,8 @@ int set_cpu_freq(int freq)
 		ret = regulator_set_voltage(cpu_regulator, gp_volt,
 					    gp_volt);
 		if (ret < 0) {
-			printk(KERN_ERR "COULD NOT SET GP VOLTAGE!!!!\n");
+			//printk(KERN_ERR "-cpufreq@0 COULD NOT SET GP VOLTAGE!!!!\n");
+			printk(KERN_DEBUG "-cpufreq@0 COULD NOT SET GP VOLTAGE!!!!\n");
 			goto err3;
 		}
 	}
@@ -123,15 +124,16 @@ int set_cpu_freq(int freq)
 		ret = regulator_set_voltage(cpu_regulator, gp_volt,
 					    gp_volt);
 		if (ret < 0) {
-			printk(KERN_ERR "COULD NOT SET GP VOLTAGE!!!!\n");
+			//printk(KERN_ERR "-cpufreq@1 COULD NOT SET GP VOLTAGE!!!!\n");
+			printk(KERN_DEBUG "-cpufreq@1 COULD NOT SET GP VOLTAGE!!!!\n");
 			goto err5;
 		}
 		if (!IS_ERR(soc_regulator)) {
 			ret = regulator_set_voltage(soc_regulator, soc_volt,
 							soc_volt);
 			if (ret < 0) {
-				printk(KERN_ERR
-					"COULD NOT SET SOC VOLTAGE BACK!!!!\n");
+				//printk(KERN_ERR "-cpufreq COULD NOT SET SOC VOLTAGE BACK!!!!\n");
+				printk(KERN_DEBUG "-cpufreq COULD NOT SET SOC VOLTAGE BACK!!!!\n");
 				goto err6;
 			}
 		}
@@ -243,6 +245,7 @@ static int mxc_set_target(struct cpufreq_policy *policy,
 		cpufreq_notify_transition(&freqs, CPUFREQ_POSTCHANGE);
 
 		pr_debug("DVFS core is active, cannot change FREQ using CPUFREQ\n");
+		printk(KERN_INFO "DVFS core is active, cannot change FREQ using CPUFREQ\n");
 		return ret;
 	}
 
@@ -280,7 +283,7 @@ static int mxc_set_target(struct cpufreq_policy *policy,
 	/* Loops per jiffy is not updated by the CPUFREQ driver for SMP systems.
 	  * So update it for all CPUs.
 	  */
-
+      printk(KERN_DEBUG "CONFIG_SMP = y\n");
 	for_each_possible_cpu(i)
 		per_cpu(cpu_data, i).loops_per_jiffy =
 		cpufreq_scale(per_cpu(cpu_data, i).loops_per_jiffy,
@@ -509,7 +512,7 @@ static struct notifier_block imx_cpufreq_pm_notifier = {
 };
 extern void mx6_cpu_regulator_init(void);
 static int __init mxc_cpufreq_driver_init(void)
-{
+{     
 	mx6_cpu_regulator_init();
 	mutex_init(&set_cpufreq_lock);
 	register_pm_notifier(&imx_cpufreq_pm_notifier);

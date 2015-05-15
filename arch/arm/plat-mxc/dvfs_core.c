@@ -263,7 +263,7 @@ static int mx5_set_cpu_freq(int op)
 						    gp_volt);
 			if (ret < 0) {
 				printk(KERN_DEBUG
-				       "COULD NOT SET GP VOLTAGE!!!!\n");
+				       "mx5_set_cpu_freq@0 COULD NOT SET GP VOLTAGE!!!!\n");
 				return ret;
 			}
 			udelay(dvfs_data->delay_time);
@@ -305,7 +305,7 @@ static int mx5_set_cpu_freq(int op)
 						    gp_volt);
 			if (ret < 0) {
 				printk(KERN_DEBUG
-				       "COULD NOT SET GP VOLTAGE!!!!\n");
+				       "mx5_set_cpu_freq@1 COULD NOT SET GP VOLTAGE!!!!\n");
 				return 0;
 			}
 			udelay(dvfs_data->delay_time);
@@ -389,6 +389,7 @@ static int mx6_set_cpu_freq(int op)
 	unsigned long rate = 0;
 	int gp_volt = cpu_op_tbl[op].cpu_voltage;
 
+	printk(KERN_INFO "mx6_set_cpu_freq: \n");
 	org_cpu_rate = clk_get_rate(cpu_clk);
 	rate = cpu_op_tbl[op].cpu_rate;
 

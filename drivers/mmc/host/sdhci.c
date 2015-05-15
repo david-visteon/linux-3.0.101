@@ -27,6 +27,7 @@
 #include <linux/mmc/host.h>
 #include <linux/mmc/card.h>
 
+#include <mach/esdhc.h>
 #include "sdhci.h"
 
 #define DRIVER_NAME "sdhci"
@@ -1183,6 +1184,7 @@ out:
 static void sdhci_set_power(struct sdhci_host *host, unsigned short power)
 {
 	u8 pwr = 0;
+	struct esdhc_platform_data *boarddata = host->mmc->parent->platform_data;
 
 	if (power != (unsigned short)-1) {
 		switch (1 << power) {
@@ -1204,6 +1206,13 @@ static void sdhci_set_power(struct sdhci_host *host, unsigned short power)
 
 	if (host->pwr == pwr)
 		return;
+
+	if(boarddata->set_power) {
+		if(power == (unsigned short)-1)
+			boarddata->set_power(false);
+		else
+			boarddata->set_power(true);
+	}
 
 	host->pwr = pwr;
 
@@ -2892,7 +2901,13 @@ int sdhci_add_host(struct sdhci_host *host)
 	} else {
 		regulator_enable(host->vmmc);
 	}
-
+      //debug
+      struct regulator *regdavid=regulator_get(NULL, "vmmc");
+      if (!IS_ERR(regdavid)) {
+           // printk(KERN_WARNING "supply name = %s,maxu=%d\n",regdavid->supply_name,regdavid->max_uV);
+           printk(KERN_WARNING "suppname=\n");
+      	}
+     //debug
 	sdhci_init(host, 0);
 
 	ret = request_irq(host->irq, sdhci_irq, IRQF_SHARED,

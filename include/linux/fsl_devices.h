@@ -325,6 +325,10 @@ struct fsl_mxc_tvin_platform_data {
 	bool cvbs;
 	/* adv7280 mipi-csi i2c slave addr */
 	u8 csi_tx_addr;
+#if defined CONFIG_MACH_MX6Q_ARM2
+	bool is_adv7182;
+	int (*irq_status)(void);
+#endif
 };
 
 struct mpc8xx_pcmcia_ops {
@@ -386,6 +390,10 @@ struct mxc_audio_platform_data {
 	int mic_active_low;	/* micphone irq is active low */
 
 	int sysclk;
+#if defined CONFIG_MACH_MX6Q_ARM2
+	int rst_gpio;
+	int (*analog_mic_gain)(int level);
+#endif
 	const char *codec_name;
 
 	int (*init) (void);	/* board specific init */
