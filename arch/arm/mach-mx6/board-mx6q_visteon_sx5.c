@@ -683,9 +683,9 @@ static struct sys_timer mx6q_sx5_timer = {
 };
 
 /*
- * initialize __mach_desc_MX6Q_ARM2 data structure.
+ * initialize __mach_desc_MX6Q_VISTEON_SX5 data structure.
  */
-MACHINE_START(MX6Q_ARM2, "Visteon i.MX 6Quad Core Visteon SX5 Board")
+MACHINE_START(MX6Q_VISTEON_SX5, "Visteon i.MX 6Quad Core Visteon SX5 Board")
 	.boot_params  = MX6_PHYS_OFFSET + 0x100,
 	.fixup        = mx6q_fixup_sx5_board,
 	.map_io       = mx6_map_io,
