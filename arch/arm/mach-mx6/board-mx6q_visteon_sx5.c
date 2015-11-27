@@ -49,6 +49,7 @@
 /* IO to control the reset state of the tef6638 audio dsp */
 #define DO_CODEC_RESET                    IMX_GPIO_NR(2, 13)
 
+//#define DO_GPS_WAKEUP			  IMX_GPIO_NR(3, 19)
 /**
  * The names in this array are not used to give an exported GPIO its name- that happens
  * inside devices.c. These names are only used for debugfs to display an alternate name
@@ -203,6 +204,57 @@ static struct gpio_export board_gpio_exports[] = {
 	        .dir_in = false,
 	        .redirectable = true,
 	    },
+	
+            {
+		   .name = "GPS Boot0",
+		   .altName = "DO_GPS_BOOT0",
+		   .id = IMX_GPIO_NR( 3,  25),
+		   .active_low = false,
+		   .initial_level = false,
+		   .dir_in = false,
+		   .redirectable = true,
+	    },
+
+	    {
+		   .name = "DO_BT_EN",
+		   .altName = "DO_BT_EN_O",
+		   .id = IMX_GPIO_NR(4,16),
+		   .active_low = false,
+		   .initial_level = false,
+		   .dir_in = false,
+		   .redirectable = true,
+	   },
+
+	   {
+		   .name = "GPS Boot1",
+                   .altName = "DO_GPS_BOOT1",
+                   .id = IMX_GPIO_NR(3,24),
+                   .active_low = false,
+                   .initial_level = false,
+                   .dir_in = false,
+                   .redirectable = true, 
+           },
+
+           {
+                   .name = "UART2_TXD_GPIO1_07",
+                   .altName = "DO_UART2_TXD_GPIO1_07",
+                   .id = IMX_GPIO_NR(1,7),
+                   .active_low = false,
+                   .initial_level = false,
+                   .dir_in = false,
+                   .redirectable = true,
+           },
+
+           {
+                   .name = "UART2_RXD_GPIO1_08",
+                   .altName = "DO_UART2_RXD_GPIO1_08",
+                   .id = IMX_GPIO_NR(1,8),
+                   .active_low = false,
+                   .initial_level = false,
+                   .dir_in = false,
+                   .redirectable = true,
+           },
+	
 };
 
 
@@ -504,7 +556,7 @@ static void board_gpio_export(void)
 	int export_count = sizeof(board_gpio_exports)/sizeof(board_gpio_exports[0]);
 	int status;
 
-	pr_warning( "sx5 board_gpio_export: %d",  export_count);
+	pr_warning( "chk1:sx5 board_gpio_export: %d",  export_count);
 	while( export_count-- > 0) {
 
 		pr_debug( "Exporting '%s'",  export_gpio->name);
@@ -577,7 +629,45 @@ static void __init mx6q_sx5_board_init(void) {
 
 	/* Toggle GPIO4_28 ON, Only for debug purpose. */
 	toggle_gpio4_28(1);
+//
+	board_gpio_export();
+        iomux_v3_cfg_t gps_pads_io[] = { 
+                                          MX6Q_PAD_EIM_D25__GPIO_3_25 ,
+                                          MX6Q_PAD_EIM_D24__GPIO_3_24 ,
+					  /*MX6Q_PAD_GPIO_8__GPIO_1_8,
+					  MX6Q_PAD_GPIO_7__GPIO_1_7*/
+                                       };
+        iomux_v3_cfg_t gps_pads_uart[] = {
+                                           MX6Q_PAD_EIM_D25__UART3_RXD,
+                                           MX6Q_PAD_EIM_D24__UART3_TXD,
+				           /*MX6Q_PAD_GPIO_7__UART2_TXD,
+					   MX6Q_PAD_GPIO_8__UART2_RXD*/
+                                        };
+        //int gps_pads_cnt = ARRAY_SIZE(gps_pads);
 
+	gpio_set_value(IMX_GPIO_NR(3, 19), 1);
+	printk(KERN_WARNING "set GPS wakeup high !\n");
+        mxc_iomux_v3_setup_multiple_pads(gps_pads_io,2);
+
+        printk(KERN_WARNING "set 3_25/4_16 high and start to delay\n");
+        
+	gpio_set_value(IMX_GPIO_NR(3, 25), 1);
+        gpio_set_value(IMX_GPIO_NR(3, 24), 1);
+	//gpio_set_value(IMX_GPIO_NR(1,8),1);
+        //gpio_set_value(IMX_GPIO_NR(1,7),1);
+	
+        gpio_set_value(DO_BT_EN, 1);
+        mdelay(2);
+
+        printk(KERN_WARNING "set 4_16 low and start to delay1\n");
+        gpio_set_value(DO_BT_EN, 0);
+        mdelay(200);
+
+        printk(KERN_WARNING "restore uart3-rxd pin function\n");
+        mxc_iomux_v3_setup_multiple_pads(gps_pads_uart,2);
+//
+
+        
 	/* Add the UART devices */
 	mx6q_init_uart();
 
@@ -660,19 +750,47 @@ static void __init mx6q_sx5_board_init(void) {
 
 
 	/* Add audio support */
-	imx6q_init_audio();
+	//imx6q_init_audio();
 
 	/* Initialized and powering on the Bluetooth module. */
-	mx6q_bluetooth_init();
+	//mx6q_bluetooth_init();
 
 	/* Initialized and powering on the WLAN module. */
-	mx6q_wl12xx_wlan_init();
+	//mx6q_wl12xx_wlan_init();
 //#endif
 
 	/* Add CAAM device */
 	imx6q_add_imx_caam();
 	/* Export GPIOs needed by user space */
-	board_gpio_export();
+	//board_gpio_export();
+
+//david
+#if 0
+	iomux_v3_cfg_t gps_pads_io[] = { 
+					  MX6Q_PAD_EIM_D25__GPIO_3_25 ,
+					  MX6Q_PAD_EIM_D24__GPIO_3_24					
+                                       };
+        iomux_v3_cfg_t gps_pads_uart[] = {
+					   MX6Q_PAD_EIM_D25__UART3_RXD,
+				           MX6Q_PAD_EIM_D24__UART3_TXD
+					};
+        //int gps_pads_cnt = ARRAY_SIZE(gps_pads);
+         
+        mxc_iomux_v3_setup_multiple_pads(gps_pads_io,2);
+
+	//printk(KERN_WARNING "set 3_25/4_16 high and start to delay\n");
+	gpio_set_value(IMX_GPIO_NR(3, 25), 1);
+	gpio_set_value(IMX_GPIO_NR(3, 24), 1);
+        gpio_set_value(DO_BT_EN, 1);                           
+        mdelay(2);  
+
+	//printk(KERN_WARNING "set 4_16 low and start to delay\n");
+        gpio_set_value(DO_BT_EN, 0);
+        mdelay(2);
+
+	//printk(KERN_WARNING "restore uart3-rxd pin function\n");
+        mxc_iomux_v3_setup_multiple_pads(gps_pads_uart,2);
+#endif
 
 	/* Toggle GPIO4_28 OFF, Only for debug purpose. */
 	toggle_gpio4_28(0);

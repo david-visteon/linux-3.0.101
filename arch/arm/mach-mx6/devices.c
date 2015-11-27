@@ -34,7 +34,8 @@
 
 static const char * const gpio_names0[32] = {
 	NULL, NULL, NULL, NULL, NULL,
-	NULL, NULL, NULL, NULL, NULL,
+	NULL, NULL, "UART2_TXD_GPIO1_07", 
+	"UART2_RXD_GPIO1_08", NULL,
 	NULL, NULL, NULL,
 	NULL, NULL, NULL,
 	"iPod Reset", 						// 16
@@ -72,7 +73,7 @@ static const char * const gpio_names2[32] = {
 	"Watchdog Interrupt",				// 20
 	NULL, NULL,
 	"Watchdog Disable",					// 23
-	NULL,
+	"GPS Boot1",						// 24
 	"GPS Boot0",						// 25
 	"Reset", 							// 26
 	"DO_VD_RESET",						// 27

@@ -215,15 +215,18 @@ static int __init mx6q_wl12xx_wlan_init(void) {
 /*
  *  bluetooth initialisation stuff.
  */
+
 static int bluetooth_enable(int status) {
+#if 0
 	if (status) {
 		gpio_set_value(DO_BT_EN, 1);
 	} else {
 		gpio_set_value(DO_BT_EN, 0);
 	}
-
+#endif
 	return 0;
 }
+
 
 static int __init mx6q_bluetooth_clock_init(void) {
 	struct clk *new_parent;
