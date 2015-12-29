@@ -148,6 +148,7 @@ static struct gpio_export board_gpio_exports[] = {
 	        .dir_in = true,
 	        .redirectable = true,
 	    },
+/*
 	    {
 	        .name = "Reset VIP",
 	        .altName = "DO_VIP_RESET",
@@ -157,7 +158,7 @@ static struct gpio_export board_gpio_exports[] = {
 	        .dir_in = false,
 	        .redirectable = true,
 	    },
-	   
+*/ 
 	    {
 	        .name = "Debug LED",
 	        .altName = "DO_DEBUG_LED",
@@ -556,7 +557,7 @@ static void board_gpio_export(void)
 	int export_count = sizeof(board_gpio_exports)/sizeof(board_gpio_exports[0]);
 	int status;
 
-	pr_warning( "chk1:sx5 board_gpio_export: %d",  export_count);
+	pr_info( "sx5 board_gpio_export: %d",  export_count);
 	while( export_count-- > 0) {
 
 		pr_debug( "Exporting '%s'",  export_gpio->name);
@@ -576,7 +577,7 @@ static void board_gpio_export(void)
 		}
 
 		pr_debug( "'%s' is active_low: %d",  export_gpio->name,  export_gpio->active_low);
-        gpio_sysfs_set_active_low( export_gpio->id,  export_gpio->active_low);
+		gpio_sysfs_set_active_low( export_gpio->id,  export_gpio->active_low);
 
 		if( true == export_gpio->dir_in) {
 
@@ -626,28 +627,24 @@ static void __init mx6q_fixup_sx5_board(struct machine_desc *desc, struct tag *t
 }
 
 static void __init mx6q_sx5_board_init(void) {
-
-	/* Toggle GPIO4_28 ON, Only for debug purpose. */
-	toggle_gpio4_28(1);
-//
-	board_gpio_export();
-        iomux_v3_cfg_t gps_pads_io[] = { 
+	
+	iomux_v3_cfg_t gps_pads_io[] = {
                                           MX6Q_PAD_EIM_D25__GPIO_3_25 ,
                                           MX6Q_PAD_EIM_D24__GPIO_3_24 ,
-					  /*MX6Q_PAD_GPIO_8__GPIO_1_8,
-					  MX6Q_PAD_GPIO_7__GPIO_1_7*/
                                        };
         iomux_v3_cfg_t gps_pads_uart[] = {
                                            MX6Q_PAD_EIM_D25__UART3_RXD,
                                            MX6Q_PAD_EIM_D24__UART3_TXD,
-				           /*MX6Q_PAD_GPIO_7__UART2_TXD,
-					   MX6Q_PAD_GPIO_8__UART2_RXD*/
                                         };
-        //int gps_pads_cnt = ARRAY_SIZE(gps_pads);
 
+	/* Toggle GPIO4_28 ON, Only for debug purpose. */
+	toggle_gpio4_28(1);
+
+	board_gpio_export();
+	//int gps_pads_cnt = ARRAY_SIZE(gps_pads);
 	gpio_set_value(IMX_GPIO_NR(3, 19), 1);
 	printk(KERN_WARNING "set GPS wakeup high !\n");
-        mxc_iomux_v3_setup_multiple_pads(gps_pads_io,2);
+	mxc_iomux_v3_setup_multiple_pads(gps_pads_io,2);
 
         printk(KERN_WARNING "set 3_25/4_16 high and start to delay\n");
         
@@ -659,15 +656,13 @@ static void __init mx6q_sx5_board_init(void) {
         gpio_set_value(DO_BT_EN, 1);
         mdelay(2);
 
-        printk(KERN_WARNING "set 4_16 low and start to delay1\n");
+        printk(KERN_WARNING "set 4_16 low and start to delay\n");
         gpio_set_value(DO_BT_EN, 0);
         mdelay(200);
 
         printk(KERN_WARNING "restore uart3-rxd pin function\n");
         mxc_iomux_v3_setup_multiple_pads(gps_pads_uart,2);
-//
-
-        
+ 
 	/* Add the UART devices */
 	mx6q_init_uart();
 
@@ -757,40 +752,9 @@ static void __init mx6q_sx5_board_init(void) {
 
 	/* Initialized and powering on the WLAN module. */
 	//mx6q_wl12xx_wlan_init();
-//#endif
 
 	/* Add CAAM device */
 	imx6q_add_imx_caam();
-	/* Export GPIOs needed by user space */
-	//board_gpio_export();
-
-//david
-#if 0
-	iomux_v3_cfg_t gps_pads_io[] = { 
-					  MX6Q_PAD_EIM_D25__GPIO_3_25 ,
-					  MX6Q_PAD_EIM_D24__GPIO_3_24					
-                                       };
-        iomux_v3_cfg_t gps_pads_uart[] = {
-					   MX6Q_PAD_EIM_D25__UART3_RXD,
-				           MX6Q_PAD_EIM_D24__UART3_TXD
-					};
-        //int gps_pads_cnt = ARRAY_SIZE(gps_pads);
-         
-        mxc_iomux_v3_setup_multiple_pads(gps_pads_io,2);
-
-	//printk(KERN_WARNING "set 3_25/4_16 high and start to delay\n");
-	gpio_set_value(IMX_GPIO_NR(3, 25), 1);
-	gpio_set_value(IMX_GPIO_NR(3, 24), 1);
-        gpio_set_value(DO_BT_EN, 1);                           
-        mdelay(2);  
-
-	//printk(KERN_WARNING "set 4_16 low and start to delay\n");
-        gpio_set_value(DO_BT_EN, 0);
-        mdelay(2);
-
-	//printk(KERN_WARNING "restore uart3-rxd pin function\n");
-        mxc_iomux_v3_setup_multiple_pads(gps_pads_uart,2);
-#endif
 
 	/* Toggle GPIO4_28 OFF, Only for debug purpose. */
 	toggle_gpio4_28(0);
